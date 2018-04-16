@@ -1,0 +1,57 @@
+# Machine Translation Using Sequence to Sequence Models
+Members:
+1. Leiko Ravelo
+2. Paolo Valdez
+3. Darwin Bautista
+
+*LaTeX file*: [link](https://www.overleaf.com/15548622dybfygsmryxt)
+*Google slides*: [link](https://docs.google.com/presentation/d/1mjo4LcduXuh5jWLy6pzUe-ZqpJvtBWL_9-tAxVEPq2g/edit?usp=sharing)
+
+### Development Environment
+Preferably work on a virtual environment (Python 3).
+See [this guide](https://www.pyimagesearch.com/2016/10/24/ubuntu-16-04-how-to-install-opencv/) for installing virtual environments.
+
+I also thought it would be a good idea to use jupyter notebooks for this.
+
+Packages (so far):
+* Tensorflow
+* Keras
+* Jupyter
+* Ipython
+
+```
+pip install keras tensorflow jupyter ipython
+```
+
+The following command will open a browser to the jupyter environment.
+```
+jupyter notebook
+```
+
+It's also possible to run a jupyter notebook remotely. See [running a notebook server](http://jupyter-notebook.readthedocs.io/en/stable/public_server.html). (Can access through vpn w/ opera)
+
+### Useful Resources
+Add here some resources you think might be useful for the project.
+* Hyperparameter optimization: [hyperopt](https://github.com/hyperopt/hyperopt)
+* Save and Load Keras Models: [link](https://machinelearningmastery.com/save-load-keras-deep-learning-models/)
+* Stanford CS224n NLP with DL: [link](http://web.stanford.edu/class/cs224n/syllabus.html)
+* Hyperparamter optimization guide: [link](https://www.jeremyjordan.me/hyper-parameter-tuning/)
+* Machine Translation Best Practices "mini guide": [link](http://ruder.io/deep-learning-nlp-best-practices/index.html#neuralmachinetranslation)
+
+Keras Tutorials:
+* Francois Chollet DL with Python: [link](https://github.com/fchollet/deep-learning-with-python-notebooks)
+* ML-AI experiments: [link](https://github.com/kmsravindra/ML-AI-experiments)
+* NMT-Keras: [link](https://nmt-keras.readthedocs.io/en/latest/)
+
+### Research Papers
+Add here relevant research papers
+
+### Tasks
+1. Dataset Creation
+2. Data Preprocessing
+    * Chris Albon Tutorials [link](https://chrisalbon.com/#machine_learning)
+    * Word Representation (one-hot, word2vec, [glove](https://nlp.stanford.edu/projects/glove/))
+3. Identify Hyperparameters
+4. Model Generation
+5. Hyperparameter Tuning/Optimization
+6. If more time, try out other models (gru, seq2seq w/ attention, bidirectional lstm, etc.)

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <style>
+/*--------------------------------------------------------------------------------------------- * Copyright (c) Microsoft Corporation. All rights reserved. * Licensed under the MIT License. See License.txt in the project root for license information. *--------------------------------------------------------------------------------------------*/ body { font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback"; font-size: 14px; padding: 0 12px; line-height: 22px; word-wrap: break-word; } body.scrollBeyondLastLine { margin-bottom: calc(100vh - 22px); } body.showEditorSelection .code-line { position: relative; } body.showEditorSelection .code-active-line:before, body.showEditorSelection .code-line:hover:before { content: ""; display: block; position: absolute; top: 0; left: -12px; height: 100%; } body.showEditorSelection li.code-active-line:before, body.showEditorSelection li.code-line:hover:before { left: -30px; } .vscode-light.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(0, 0, 0, 0.15); } .vscode-light.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(0, 0, 0, 0.40); } .vscode-dark.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(255, 255, 255, 0.4); } .vscode-dark.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(255, 255, 255, 0.60); } .vscode-high-contrast.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(255, 160, 0, 0.7); } .vscode-high-contrast.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(255, 160, 0, 1); } img { max-width: 100%; max-height: 100%; } a { color: #4080D0; text-decoration: none; } a:focus, input:focus, select:focus, textarea:focus { outline: 1px solid -webkit-focus-ring-color; outline-offset: -1px; } hr { border: 0; height: 2px; border-bottom: 2px solid; } h1 { padding-bottom: 0.3em; line-height: 1.2; border-bottom-width: 1px; border-bottom-style: solid; } h1, h2, h3 { font-weight: normal; } h1 code, h2 code, h3 code, h4 code, h5 code, h6 code { font-size: inherit; line-height: auto; } a:hover { color: #4080D0; text-decoration: underline; } table { border-collapse: collapse; } table > thead > tr > th { text-align: left; border-bottom: 1px solid; } table > thead > tr > th, table > thead > tr > td, table > tbody > tr > th, table > tbody > tr > td { padding: 5px 10px; } table > tbody > tr + tr > td { border-top: 1px solid; } blockquote { margin: 0 7px 0 5px; padding: 0 16px 0 10px; border-left: 5px solid; } code { font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback"; font-size: 14px; line-height: 19px; } body.wordWrap pre { white-space: pre-wrap; } .mac code { font-size: 12px; line-height: 18px; } code > div { padding: 16px; border-radius: 3px; overflow: auto; } /** Theming */ .vscode-light { color: rgb(30, 30, 30); } .vscode-dark { color: #DDD; } .vscode-high-contrast { color: white; } .vscode-light code { color: #A31515; } .vscode-dark code { color: #D7BA7D; } .vscode-light code > div { background-color: rgba(220, 220, 220, 0.4); } .vscode-dark code > div { background-color: rgba(10, 10, 10, 0.4); } .vscode-high-contrast code > div { background-color: rgb(0, 0, 0); } .vscode-high-contrast h1 { border-color: rgb(0, 0, 0); } .vscode-light table > thead > tr > th { border-color: rgba(0, 0, 0, 0.69); } .vscode-dark table > thead > tr > th { border-color: rgba(255, 255, 255, 0.69); } .vscode-light h1, .vscode-light hr, .vscode-light table > tbody > tr + tr > td { border-color: rgba(0, 0, 0, 0.18); } .vscode-dark h1, .vscode-dark hr, .vscode-dark table > tbody > tr + tr > td { border-color: rgba(255, 255, 255, 0.18); } .vscode-light blockquote, .vscode-dark blockquote { background: rgba(127, 127, 127, 0.1); border-color: rgba(0, 122, 204, 0.5); } .vscode-high-contrast blockquote { background: transparent; border-color: #fff; }
+</style>
+<style>
+/* Tomorrow Theme */ /* http://jmblog.github.com/color-themes-for-google-code-highlightjs */ /* Original theme - https://github.com/chriskempson/tomorrow-theme */ /* Tomorrow Comment */ .hljs-comment, .hljs-quote { color: #8e908c; } /* Tomorrow Red */ .hljs-variable, .hljs-template-variable, .hljs-tag, .hljs-name, .hljs-selector-id, .hljs-selector-class, .hljs-regexp, .hljs-deletion { color: #c82829; } /* Tomorrow Orange */ .hljs-number, .hljs-built_in, .hljs-builtin-name, .hljs-literal, .hljs-type, .hljs-params, .hljs-meta, .hljs-link { color: #f5871f; } /* Tomorrow Yellow */ .hljs-attribute { color: #eab700; } /* Tomorrow Green */ .hljs-string, .hljs-symbol, .hljs-bullet, .hljs-addition { color: #718c00; } /* Tomorrow Blue */ .hljs-title, .hljs-section { color: #4271ae; } /* Tomorrow Purple */ .hljs-keyword, .hljs-selector-tag { color: #8959a8; } .hljs { display: block; overflow-x: auto; color: #4d4d4c; padding: 0.5em; } .hljs-emphasis { font-style: italic; } .hljs-strong { font-weight: bold; }
+</style>
+<style>
+ul.contains-task-list { padding-left: 0; } ul ul.contains-task-list { padding-left: 40px; } .task-list-item { list-style-type: none; } .task-list-item-checkbox { vertical-align: middle; }
+</style>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'HelveticaNeue-Light', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="machine-translation-using-sequence-to-sequence-models">Machine Translation Using Sequence to Sequence Models</h1>
+<p>Members:</p>
+<ol>
+<li>Leiko Ravelo</li>
+<li>Paolo Valdez</li>
+<li>Darwin Bautista</li>
+</ol>
+<h3 id="presentation-materials">Presentation Materials</h3>
+<ol>
+<li><a href="https://docs.google.com/presentation/d/1mjo4LcduXuh5jWLy6pzUe-ZqpJvtBWL_9-tAxVEPq2g/edit?usp=sharing">Google slides</a></li>
+<li>LaTeX project is in Slack chat</li>
+</ol>
+<h3 id="development-environment">Development Environment</h3>
+<p>Preferably work on a virtual environment (Python 3).
+See <a href="https://www.pyimagesearch.com/2016/10/24/ubuntu-16-04-how-to-install-opencv/">this guide</a> for installing virtual environments.</p>
+<p>I also thought it would be a good idea to use jupyter notebooks for this.</p>
+<p>Packages (so far):</p>
+<ul>
+<li>Tensorflow</li>
+<li>Keras</li>
+<li>Jupyter</li>
+<li>Ipython</li>
+</ul>
+<pre><code>pip install keras tensorflow jupyter ipython
+</code></pre>
+<p>The following command will open a browser to the jupyter environment.</p>
+<pre><code>jupyter notebook
+</code></pre>
+<p>It's also possible to run a jupyter notebook remotely. See <a href="http://jupyter-notebook.readthedocs.io/en/stable/public_server.html">running a notebook server</a>. (Can access through vpn w/ opera)</p>
+<h3 id="useful-resources">Useful Resources</h3>
+<p>Add here some resources you think might be useful for the project.</p>
+<ul>
+<li>Hyperparameter optimization: <a href="https://github.com/hyperopt/hyperopt">hyperopt</a></li>
+<li>Save and Load Keras Models: <a href="https://machinelearningmastery.com/save-load-keras-deep-learning-models/">link</a></li>
+<li>Stanford CS224n NLP with DL: <a href="http://web.stanford.edu/class/cs224n/syllabus.html">link</a></li>
+<li>Hyperparamter optimization guide: <a href="https://www.jeremyjordan.me/hyper-parameter-tuning/">link</a></li>
+<li>Machine Translation Best Practices &quot;mini guide&quot;: <a href="http://ruder.io/deep-learning-nlp-best-practices/index.html#neuralmachinetranslation">link</a></li>
+</ul>
+<p>Keras Tutorials:</p>
+<ul>
+<li>Francois Chollet DL with Python: <a href="https://github.com/fchollet/deep-learning-with-python-notebooks">link</a></li>
+<li>ML-AI experiments: <a href="https://github.com/kmsravindra/ML-AI-experiments">link</a></li>
+<li>NMT-Keras: <a href="https://nmt-keras.readthedocs.io/en/latest/">link</a></li>
+</ul>
+<h3 id="research-papers">Research Papers</h3>
+<p>Add here relevant research papers</p>
+<h3 id="tasks">Tasks</h3>
+<h4 id="dataset-creation">Dataset Creation</h4>
+<p>Once we have the dataset available, curate it and format it properly (tab indented text file).</p>
+<h4 id="data-preprocessing">Data Preprocessing</h4>
+<p>Convert text data from file to acceptable representation. May also need to remove punctuations (like comma, period, must be settled early on). Theres one-hot representation, which is pretty easy to implement. word2vec and glove is also available but may take some time to implement.</p>
+<p>Relevant Resources:</p>
+<ul>
+<li><a href="https://chrisalbon.com/#machine_learning">Chris Albon Tutorials</a></li>
+<li><a href="https://github.com/fchollet/deep-learning-with-python-notebooks/blob/master/6.1-one-hot-encoding-of-words-or-characters.ipynb">One-hot representation tutorial</a></li>
+<li><a href="https://github.com/fchollet/deep-learning-with-python-notebooks/blob/master/6.1-using-word-embeddings.ipynb">word embeddings tutorial</a></li>
+<li><a href="https://nlp.stanford.edu/projects/glove/">pretrained glove representation</a></li>
+</ul>
+<h4 id="model-design-and-metric-checking">Model Design and Metric checking</h4>
+<p>Objective of the project is to create an optimal working machine translator. Define objectives and a success metric. There's BLEU score but let's wait for sir's definition. Standard RNN architecture ('Vanilla Model') used for machine translation can be seen on stanford lectures.</p>
+<blockquote>
+<p>I think it's also important to decouple training and actual translation. Need a way to save the model and load it on a different python file. -Leiko</p>
+</blockquote>
+<p>Relevant Resources:</p>
+<ul>
+<li><a href="https://github.com/kmsravindra/ML-AI-experiments/blob/master/AI/Neural%20Machine%20Translation/Neural%20machine%20translation%20-%20Encoder-Decoder%20seq2seq%20model.ipynb">Basic Neural Machine Translator (Eng-Fr)</a></li>
+</ul>
+<h4 id="hyperparameter-tuning">Hyperparameter Tuning</h4>
+<p>Possible hyperparameters include. Task is to identify which hyperparameters are important, and find generally accepted ranges. One solution is do a random search through the hyperparameter space to find the model that gives optimal results.</p>
+<p>I have found <a href="https://github.com/hyperopt/hyperopt">hyperopt</a> although I'm not sure how it works yet.</p>
+<p>Possible hyperparameters include:</p>
+<ol>
+<li>Learning rate</li>
+<li>Gradient Descent Optimizer (SGD, Adam, RMSprop)</li>
+<li>Minibatch size</li>
+<li>Epochs</li>
+<li>RNN layers (1-4)</li>
+<li>Choice of RNN architecture (GRU, RNN, LSTM)</li>
+<li>Misc (Attention model, bidirectional lstm, deep lstm)</li>
+</ol>
+<blockquote>
+<p>I'm not sure yet which ones of the above are important -Leiko</p>
+</blockquote>
+
+    </body>
+    </html>
