@@ -58,7 +58,7 @@ Relevant Resources:
 * [One-hot representation tutorial](https://github.com/fchollet/deep-learning-with-python-notebooks/blob/master/6.1-one-hot-encoding-of-words-or-characters.ipynb)
 * [word embeddings tutorial](https://github.com/fchollet/deep-learning-with-python-notebooks/blob/master/6.1-using-word-embeddings.ipynb)
 * [pretrained glove representation](https://nlp.stanford.edu/projects/glove/)
-
+* [fasttext](https://github.com/facebookresearch/fastText/blob/master/docs/crawl-vectors.md)
 #### Model Design and Metric checking
 Objective of the project is to create an optimal working machine translator. Define objectives and a success metric. There's BLEU score but let's wait for sir's definition. Standard RNN architecture ('Vanilla Model') used for machine translation can be seen on stanford lectures.
 
