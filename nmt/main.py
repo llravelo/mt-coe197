@@ -11,7 +11,7 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 
 
-batch_size = 64  # Batch size for training.
+batch_size = 2*64  # Batch size for training.
 epochs = 10  # Number of epochs to train for.
 latent_dim = 512 # Latent dimensionality of the encoding space.
 
@@ -31,8 +31,8 @@ def parse_corpora(path):
                 except ValueError:
                     continue
                 # Add start and end of sequence markers
-                eng = '\a ' + eng + ' \b'
-                fil = '\a ' + fil + ' \b'
+                eng = "'sos' " + eng + " 'eos'"
+                # fil = 's_o_s ' + fil + ' e_o_s'
                 texts_eng.append(eng)
                 texts_fil.append(fil)
     return texts_eng, texts_fil
@@ -73,11 +73,15 @@ def main():
     encoder_input_data[encoder_input_data == 1] = 0
 
     # Remove end of sequence markers
-    decoder_input_data = data_eng[:, :-1]
+    decoder_input_data = data_eng[:, :-1].copy()
 
     # Remove start of sequence markers
-    decoder_target_data = data_eng[:, 1:]
+    decoder_target_data = data_eng[:, 1:].copy()
     decoder_target_data[decoder_target_data == 1] = 0
+
+    # print(decoder_input_data)
+    # print(decoder_target_data)
+    # return
 
     # return encoder_input_data, decoder_input_data, word_index_eng
 
@@ -96,6 +100,8 @@ def main():
                                     # input_length=decoder_input_data.shape[1],
                                     trainable=False)
 
+    # return fil_embedding_layer, eng_embedding_layer
+
 
     latent_dim = 512
 
@@ -107,7 +113,7 @@ def main():
     encoder_states = [state_h, state_c]
 
     # Set up the decoder, using `encoder_states` as initial state.
-    num_decoder_tokens = len(word_index_eng) + 1
+    num_decoder_tokens = len(word_index_eng)
     decoder_inputs = Input(shape=(None, ))
     # We set up our decoder to return full output sequences,
     # and to return internal states as well. We don't use the
@@ -121,7 +127,7 @@ def main():
     from keras.utils.vis_utils import plot_model
     from keras.utils import to_categorical
 
-    decoder_target_data = to_categorical(decoder_target_data, num_decoder_tokens)
+    decoder_target_data = to_categorical(decoder_target_data)[:,:, 1:]
 
     # Define the model that will turn
     # `encoder_input_data` & `decoder_input_data` into `decoder_target_data`
@@ -182,7 +188,6 @@ def main():
     def decode_sequence(input_seq):
         # Encode the input as state vectors.
         states_value = encoder_model.predict(input_seq)
-        print(states_value[-1].shape)
 
         # Generate empty target sequence of length 1.
         target_seq = np.zeros((1, 1))
@@ -195,6 +200,8 @@ def main():
         decoded_sentence = ''
         while not stop_condition:
             output_tokens, h, c = decoder_model.predict([target_seq] + states_value)
+            # print(output_tokens)
+            # print(output_tokens.shape)
 
             # Sample a token
             sampled_token_index = np.argmax(output_tokens[0, -1, :])
