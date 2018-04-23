@@ -61,7 +61,7 @@ def convert_to_sequence(texts, max_num_words):
     return tokenizer.word_index, data
 
 
-def loader(encoder_input_data, decoder_input_data, decoder_target_data, batch_size, shuffle=True):
+def loader(encoder_input_data, decoder_input_data, decoder_target_data, in_embedding, out_embedding, batch_size, shuffle=True):
     num_batches = len(encoder_input_data) // batch_size
     # print(len(encoder_input_data), batch_size)
     num_classes = np.max(decoder_target_data) + 1
@@ -78,7 +78,10 @@ def loader(encoder_input_data, decoder_input_data, decoder_target_data, batch_si
             ei = enc_in_b.pop()
             di = dec_in_b.pop()
             do = dec_out_b.pop()
-            do = to_categorical(do, num_classes)[:, :, 1:]
+            ei = np.take(in_embedding, ei, axis=0)
+            di = np.take(out_embedding, di, axis=0)
+            #do = to_categorical(do, num_classes)[:, :, 1:]
+            do = np.take(out_embedding, do, axis=0)
             yield [ei, di], [do]
 
 

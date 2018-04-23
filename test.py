@@ -1,63 +1,33 @@
 #!/usr/bin/env python3
+import os
+from pyfasttext import FastText
 
 import numpy as np
 
 from keras import Input, Model
-from keras.callbacks import ModelCheckpoint
-from keras.utils import to_categorical
+from keras.layers import Embedding, LSTM, Dense
 
 from nmt import data
-
-batch_size = 2*64  # Batch size for training.
-epochs = 10000 # Number of epochs to train for.
-latent_dim = 512 # Latent dimensionality of the encoding space.
-
-
-from keras.layers import LSTM, Dense, Embedding
-
-from nmt.buffering import buffered_gen_threaded as buf
-
-# from buffering import buffered_gen_threaded as buf
-
-from keras.losses import cosine_proximity, mean_squared_error
-
-def custom_loss(y_true, y_pred):
-    return cosine_proximity(y_true, y_pred) + mean_squared_error(y_true, y_pred)
 
 
 def main():
     texts_tl, texts_en = data.parse_corpora('corpus')
-    word_index_tl, word_index_en, encoder_input_data, decoder_input_data, decoder_target_data = data.preprocess(texts_en, texts_tl)
-
-    print(texts_tl[0])
-    print(encoder_input_data[0])
-
-    print(texts_en[0])
-    print(decoder_input_data[0])
-    print(decoder_target_data[0])
-
-    print('Number of samples:', len(texts_tl))
-    print('Number of unique input tokens:', len(word_index_tl))
-    print('Number of unique output tokens:', len(word_index_en))
-    print('Max sequence length for inputs:', encoder_input_data.shape[1])
-    print('Max sequence length for outputs:', decoder_input_data.shape[1])
+    # word_index_tl, word_index_en, encoder_input_data, decoder_input_data, decoder_target_data = data.preprocess(
+    #     texts_en, texts_tl)
 
 
+    # embedding_weights = np.load('embedding-weights.npz')
+    #
+    # embedding_tl = Embedding(len(word_index_tl) + 1,
+    #                          data.EMBEDDING_DIM,
+    #                          weights=[embedding_weights['tl']],
+    #                          trainable=False)
+    #
+    # embedding_en = Embedding(len(word_index_en) + 1,
+    #                          data.EMBEDDING_DIM,
+    #                          weights=[embedding_weights['en']],
+    #                          trainable=False)
 
-    embedding_weights = np.load('embedding-weights.npz')
-
-
-    embedding_tl = Embedding(len(word_index_tl) + 1,
-                                    data.EMBEDDING_DIM,
-                                    weights=[embedding_weights['tl']],
-                                    trainable=False)
-
-    embedding_en = Embedding(len(word_index_en) + 1,
-                                    data.EMBEDDING_DIM,
-                                    weights=[embedding_weights['en']],
-                                    trainable=False)
-
-    loader = data.loader(encoder_input_data, decoder_input_data, decoder_target_data, embedding_weights['tl'], embedding_weights['en'], batch_size)
 
     latent_dim = 512
 
@@ -69,8 +39,7 @@ def main():
     encoder_states = [state_h, state_c]
 
     # Set up the decoder, using `encoder_states` as initial state.
-    num_decoder_tokens = len(word_index_en)
-    decoder_inputs = Input(shape=(None, 300))
+    decoder_inputs = Input(shape=(None,300))
     # We set up our decoder to return full output sequences,
     # and to return internal states as well. We don't use the
     # return states in the training model, but we will use them in inference.
@@ -82,25 +51,19 @@ def main():
 
     from keras.utils.vis_utils import plot_model
 
-
     # Define the model that will turn
     # `encoder_input_data` & `decoder_input_data` into `decoder_target_data`
     model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
     model.summary()
 
-    plot_model(model)
 
     # Compile & run training
-    model.compile(optimizer='rmsprop', loss=custom_loss)
+    # model.compile(optimizer='rmsprop', loss=custom_loss)
     # Note that `decoder_target_data` needs to be one-hot encoded,
     # rather than sequences of integers like `decoder_input_data`!
 
-    print(encoder_input_data.shape, decoder_input_data.shape, decoder_target_data.shape)
 
-    checkpoint = ModelCheckpoint('s2s.{epoch:02d}.h5', verbose=True, save_weights_only=True)
-
-    model.fit_generator(buf(loader), len(encoder_input_data)//batch_size, epochs, callbacks=[checkpoint])
-    # model.load_weights('s2s.01.h5')
+    model.load_weights('s2s.01.h5')
     #
     # # model.load_weights('s2s.h5')
 
@@ -110,7 +73,7 @@ def main():
     #           decoder_target_data,
     #           batch_size=batch_size,
     #           epochs=epochs,)
-              # validation_split=0.1)
+    # validation_split=0.1)
 
     # Save model
     # model.save('s2s.h5')
@@ -139,11 +102,11 @@ def main():
         [decoder_outputs] + decoder_states)
     decoder_model.summary()
 
-    target_rev_dict = {v: k for k, v in word_index_en.items()}
-    target_rev_dict[0] = '<UNK>'
 
     def argtopk(arr, k=5):
         return np.argpartition(arr, -k)[-k:]
+
+    ft_model = FastText(os.path.join('embeddings', 'wiki.en.bin'))
 
 
     def decode_sequence(input_seq):
@@ -155,30 +118,36 @@ def main():
         # Populate the first character of target sequence with the start character.
         target_seq[0, 0] = 1
 
+        target_seq = ft_model.get_numpy_vector('<s>').reshape(1, 1, -1)
+        print(target_seq.shape)
+
         # Sampling loop for a batch of sequences
         # (to simplify, here we assume a batch of size 1).
         stop_condition = False
         decoded_sentence = ''
         while not stop_condition:
             output_tokens, h, c = decoder_model.predict([target_seq] + states_value)
-            # print(output_tokens)
-            # print(output_tokens.shape)
-
             # Sample a token
-            sampled_token_index = np.argmax(output_tokens[0, -1, :])
-            sampled_word = target_rev_dict[sampled_token_index]
+
+            # sampled_token_index = np.argmax(output_tokens[0, -1, :])
+            # sampled_word = target_rev_dict[sampled_token_index]
+            sampled_word = ft_model.words_for_vector(output_tokens[0, -1, :], k=1)[0][0]
+            #print('sample: ', sampled_word)
+            #break
+
             decoded_sentence += sampled_word + " "
 
             # Exit condition: either hit max length
             # or find stop character.
             # if sampled_word in [".", "?", "!"] or
             if (sampled_word == "</s>" or
-                    len(decoded_sentence) > 1000):
+                    len(decoded_sentence) > 500):
                 stop_condition = True
 
             # Update the target sequence (of length 1).
-            target_seq = np.zeros((1, 1))
-            target_seq[0, 0] = sampled_token_index
+            # target_seq = np.zeros((1, 1))
+            # target_seq[0, 0] = sampled_token_index
+            target_seq = output_tokens[0, -1, :]
 
             # Update states
             states_value = [h, c]
@@ -190,11 +159,16 @@ def main():
     for seq_index in indexes:
         # Take one sequence (part of the training set)
         # for trying out decoding.
-        input_seq = encoder_input_data[seq_index: seq_index + 1]
+        t = texts_tl[seq_index].split()[1:-1]
+        tvec = np.stack(list(map(ft_model.get_numpy_vector, t)))
+        # input_seq = encoder_input_data[seq_index: seq_index + 1]
+        input_seq = tvec.reshape(1, -1, 300)
         decoded_sentence = decode_sequence(input_seq)
+        print(tvec.shape)
         print('-')
         print('Input sentence:', texts_tl[seq_index])
         print('Decoded sentence:', decoded_sentence)
+
 
 
 if __name__ == '__main__':
