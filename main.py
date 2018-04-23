@@ -4,11 +4,12 @@ import numpy as np
 
 from keras import Input, Model
 from keras.callbacks import ModelCheckpoint
+from keras.utils import to_categorical
 
 from nmt import data
 
 batch_size = 2*64  # Batch size for training.
-epochs = 50 # Number of epochs to train for.
+epochs = 100 # Number of epochs to train for.
 latent_dim = 512 # Latent dimensionality of the encoding space.
 
 
@@ -90,15 +91,18 @@ def main():
 
     checkpoint = ModelCheckpoint('s2s.{epoch:02d}.h5', verbose=True, save_weights_only=True)
 
-    model.fit_generator(buf(loader), len(encoder_input_data)//batch_size, epochs, callbacks=[checkpoint])
-    # model.load_weights('s2s.02.h5')
+    # model.fit_generator(buf(loader), len(encoder_input_data)//batch_size, epochs, callbacks=[checkpoint])
+    model.load_weights('s2s.01.h5')
     #
     # # model.load_weights('s2s.h5')
+
+    # decoder_target_data = to_categorical(decoder_target_data)[:, :, 1:]
+    #
     # model.fit([encoder_input_data, decoder_input_data],
     #           decoder_target_data,
     #           batch_size=batch_size,
-    #           epochs=epochs,
-    #           validation_split=0.1)
+    #           epochs=epochs,)
+              # validation_split=0.1)
 
     # Save model
     # model.save('s2s.h5')
@@ -130,6 +134,8 @@ def main():
     target_rev_dict = {v: k for k, v in word_index_en.items()}
     target_rev_dict[0] = '<UNK>'
 
+    def argtopk(arr, k=5):
+        return np.argpartition(arr, -k)[-k:]
 
 
     def decode_sequence(input_seq):
@@ -158,8 +164,8 @@ def main():
             # Exit condition: either hit max length
             # or find stop character.
             # if sampled_word in [".", "?", "!"] or
-            if (sampled_word == '' or
-                    len(decoded_sentence) > 33):
+            if (sampled_word == "</s>" or
+                    len(decoded_sentence) > 1000):
                 stop_condition = True
 
             # Update the target sequence (of length 1).

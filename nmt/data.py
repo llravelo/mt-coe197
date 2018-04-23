@@ -7,8 +7,8 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
 
-SOS = "'sos'"
-EOS = "'eos'"
+SOS = "<s>"
+EOS = "</s>"
 # FastText 300D vectors
 EMBEDDING_DIM = 300
 
@@ -24,13 +24,23 @@ def parse_corpora(path):
             continue
         with open(fname, 'r') as f:
             for line in f:
+                line = line.strip()
+                line = line.replace(",", " ,")
+                line = line.replace(".", " .")
+                line = line.replace("!", " !")
+                line = line.replace("?", " ?")
+                line = line.replace(":", " :")
+                line = line.replace(";", " ;")
                 try:
-                    en, tl = line.strip().split('\t')
+                    en, tl = line.split('\t')
                 except ValueError:
                     continue
                 # Add start and end of sequence markers
-                en = SOS + ' ' + en + ' ' + EOS
-                tl = SOS + ' ' + tl + ' ' + EOS
+                en = ' '.join([SOS] + en.split() + [EOS])
+                tl = ' '.join([SOS] + tl.split() + [EOS])
+
+                # en = SOS + ' ' + en + ' ' + EOS
+                # tl = SOS + ' ' + tl + ' ' + EOS
                 texts_en.append(en)
                 texts_tl.append(tl)
                 if len(tl) > 900:
@@ -40,14 +50,14 @@ def parse_corpora(path):
 
 
 def convert_to_sequence(texts, max_num_words):
-    tokenizer = Tokenizer(num_words=max_num_words)
+    tokenizer = Tokenizer(num_words=max_num_words, filters='')
     tokenizer.fit_on_texts(texts)
     # Convert from words to integers
     sequences = tokenizer.texts_to_sequences(texts)
     # Get maximum sequence length
     max_seq_len = max(map(len, sequences))
     # Make sure all sequences have the same length
-    data = pad_sequences(sequences, maxlen=max_seq_len)
+    data = pad_sequences(sequences, maxlen=max_seq_len, padding='post')
     return tokenizer.word_index, data
 
 
@@ -78,10 +88,11 @@ def preprocess(texts_en, texts_tl):
 
     # Remove sequence markers
     encoder_input_data = data_tl[:, 1:-1]
-    encoder_input_data[encoder_input_data == 1] = 0
+    encoder_input_data[encoder_input_data == 2] = 0
 
     # Remove end of sequence markers
     decoder_input_data = data_en[:, :-1].copy()
+    decoder_input_data[decoder_input_data == 2] = 0
 
     # Remove start of sequence markers
     decoder_target_data = data_en[:, 1:].copy()
