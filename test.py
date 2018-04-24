@@ -13,7 +13,7 @@ from nmt.models import create_models
 
 def decode_sequence(input_seq, encoder_model, decoder_model, ft_model, start_seq):
     # Encode the input as state vectors.
-    states_value = encoder_model.predict(input_seq) #+ [np.zeros((1,512)), np.zeros((1,512))]
+    states_value = [np.zeros((1,512)), np.zeros((1,512))] + encoder_model.predict(input_seq) 
 
     # Populate the first character of target sequence with the start character.
     target_seq = start_seq
@@ -23,7 +23,7 @@ def decode_sequence(input_seq, encoder_model, decoder_model, ft_model, start_seq
     stop_condition = False
     decoded_sentence = ''
     while not stop_condition:
-        output_tokens, h, c = decoder_model.predict([target_seq] + states_value)
+        output_tokens, h, c, h2, c2 = decoder_model.predict([target_seq] + states_value)
         # print(output_tokens)
         # print(output_tokens.shape)
 
@@ -43,16 +43,16 @@ def decode_sequence(input_seq, encoder_model, decoder_model, ft_model, start_seq
         target_seq = output_tokens
 
         # Update states
-        states_value = [h, c]
+        states_value = [h, c, h2, c2]
 
     return decoded_sentence
 
 
 def main():
     texts_tl, texts_en = data.parse_corpora('corpus')
-    # word_index_tl, word_index_en, encoder_input_data, decoder_input_data, decoder_target_data = data.preprocess(
-    #     texts_en, texts_tl)
-    #
+    word_index_tl, word_index_en, encoder_input_data, decoder_input_data, decoder_target_data = data.preprocess(
+         texts_en, texts_tl)
+    
 
 
     embedding_dim = 300
@@ -63,15 +63,24 @@ def main():
     indexes = np.random.randint(0, len(texts_tl), 100)
 
     ft_model = FastText(os.path.join('embeddings', 'wiki.en.bin'))
-    start_seq = ft_model.get_numpy_vector(data.SOS).reshape(1, 1, -1)
+    start_seq = ft_model.get_numpy_vector(data.SOS, normalized=True).reshape(1, 1, -1)
+
+    embedding_weights = np.load('embedding-weights.npz')
+    e_tl = embedding_weights['tl'].astype('float32')
+
+
 
     for seq_index in indexes:
         # Take one sequence (part of the training set)
         # for trying out decoding.
         sentence = texts_tl[seq_index]
-        input_seq = sentence.split()[1:-1]
+        input_seq = encoder_input_data[seq_index]
+        input_seq = np.take(e_tl, input_seq, axis=0).reshape(1, -1, 300)
+        print(input_seq)
+        #input_seq = sentence.split()[1:-1]
         #print(input_seq)
-        input_seq = np.stack(list(map(ft_model.get_numpy_vector, input_seq))).reshape(1, -1, 300)
+        #input_seq = np.stack(list(ft_model.get_numpy_vector(i, normalized=True) for i in input_seq)).reshape(1, -1, 300)
+        #input_seq = np.stack(list(map(ft_model.get_numpy_vector, input_seq))).reshape(1, -1, 300)
         #print(input_seq)
         #print(input_seq.shape)
         decoded_sentence = decode_sequence(input_seq, encoder_model, decoder_model, ft_model, start_seq)

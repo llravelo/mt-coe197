@@ -43,6 +43,9 @@ def parse_corpora(path):
                 en = ' '.join([SOS] + en.split() + [EOS])
                 tl = ' '.join([SOS] + tl.split() + [EOS])
 
+                if len(en.split()) > 30 or len(tl.split()) > 30:
+                    continue
+
                 texts_en.append(en)
                 texts_tl.append(tl)
     return texts_tl, texts_en

@@ -17,9 +17,9 @@ def create_models(input_dim, latent_dim, output_dim, output_activation=None):
     # and to return internal states as well. We don't use the
     # return states in the training model, but we will use them in inference.
     decoder_lstm = LSTM(latent_dim, return_sequences=True, return_state=True)
-    #decoder_lstm2 = LSTM(latent_dim, return_sequences=True, return_state=True)
-    decoder_outputs, _, _ = decoder_lstm(decoder_inputs, initial_state=encoder_states)
-    #decoder_outputs, _, _ = decoder_lstm2(decoder_outputs)
+    decoder_lstm2 = LSTM(latent_dim, return_sequences=True, return_state=True)
+    decoder_outputs, _, _ = decoder_lstm(decoder_inputs)#, initial_state=encoder_states)
+    decoder_outputs, _, _ = decoder_lstm2(decoder_outputs, initial_state=encoder_states)
     decoder_dense = Dense(output_dim, activation=output_activation)
     decoder_outputs = decoder_dense(decoder_outputs)
 
@@ -48,11 +48,11 @@ def create_models(input_dim, latent_dim, output_dim, output_activation=None):
 
     decoder_outputs, state_h, state_c = decoder_lstm(
         decoder_inputs, initial_state=decoder_states_inputs)
-    #decoder_outputs, state_h2, state_c2 = decoder_lstm2(decoder_outputs, initial_state=decoder_states_inputs2)
-    decoder_states = [state_h, state_c] #, state_h2, state_c2]
+    decoder_outputs, state_h2, state_c2 = decoder_lstm2(decoder_outputs, initial_state=decoder_states_inputs2)
+    decoder_states = [state_h, state_c, state_h2, state_c2]
     decoder_outputs = decoder_dense(decoder_outputs)
     decoder_model = Model(
-        [decoder_inputs] + decoder_states_inputs ,#+ decoder_states_inputs2,
+        [decoder_inputs] + decoder_states_inputs + decoder_states_inputs2,
         [decoder_outputs] + decoder_states)
 
     return model, encoder_model, decoder_model

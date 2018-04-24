@@ -50,8 +50,13 @@ def main():
         model.load_weights(fname)
         initial_epoch = int(fname.split('.')[1])
 
+    from keras.losses import cosine_proximity, mse
+
+    def custom_loss(y_true, y_pred):
+        return cosine_proximity(y_true, y_pred) + mse(y_true, y_pred)
+
     # Compile & run training
-    model.compile(optimizer='rmsprop', loss='cosine')
+    model.compile(optimizer='adagrad', loss='cosine')
     # Note that `decoder_target_data` needs to be one-hot encoded,
     # rather than sequences of integers like `decoder_input_data`!
 
