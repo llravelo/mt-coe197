@@ -72,7 +72,7 @@ def main():
         sentence = texts_tl[seq_index]
         input_seq = sentence.split()[1:-1]
         print(input_seq)
-        input_seq = np.stack(list(map(ft_model.get_numpy_vector, t)))
+        input_seq = np.stack(list(map(ft_model.get_numpy_vector, input_seq)))
         print(input_seq)
         print(input_seq.shape)
         decoded_sentence = decode_sequence(input_seq, encoder_model, decoder_model, ft_model)
