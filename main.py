@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import sys
+
 import numpy as np
 
 from keras.callbacks import ModelCheckpoint
@@ -10,8 +12,8 @@ from nmt.models import create_models
 
 # from buffering import buffered_gen_threaded as buf
 
-batch_size = 2*64  # Batch size for training.
-epochs = 50 # Number of epochs to train for.
+batch_size = 64  # Batch size for training.
+epochs = 1000 # Number of epochs to train for.
 latent_dim = 512 # Latent dimensionality of the encoding space.
 embedding_dim = 300
 
@@ -34,22 +36,28 @@ def main():
     print('Max sequence length for outputs:', decoder_input_data.shape[1])
 
     embedding_weights = np.load('embedding-weights.npz')
-    e_tl = embedding_weights['tl']
-    e_en = embedding_weights['en']
+    e_tl = embedding_weights['tl'].astype('float32')
+    e_en = embedding_weights['en'].astype('float32')
     loader = data.loader(encoder_input_data, decoder_input_data, decoder_target_data,
                          e_tl, e_en, batch_size)
 
     model = create_models(embedding_dim, latent_dim, embedding_dim)[0]
     model.summary()
 
+    initial_epoch = 1
+    if len(sys.argv) == 2:
+        fname = sys.argv[1]
+        model.load_weights(fname)
+        initial_epoch = int(fname.split('.')[1])
+
     # Compile & run training
-    model.compile(optimizer='adagrad', loss='mse')
+    model.compile(optimizer='rmsprop', loss='cosine')
     # Note that `decoder_target_data` needs to be one-hot encoded,
     # rather than sequences of integers like `decoder_input_data`!
 
     checkpoint = ModelCheckpoint('s2s.{epoch:02d}.h5', verbose=True, save_weights_only=True)
 
-    model.fit_generator(buf(loader), len(encoder_input_data)//batch_size, epochs, callbacks=[checkpoint])
+    model.fit_generator(buf(loader), len(encoder_input_data)//batch_size, epochs, callbacks=[checkpoint], initial_epoch=initial_epoch)
 
 
 if __name__ == '__main__':

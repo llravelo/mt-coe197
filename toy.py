@@ -27,19 +27,19 @@ def main():
 
     input = to_categorical(np.array([5]), 10).reshape(1, 1, -1)
     print(input.shape)
-    states = encoder.predict(input) + [np.zeros((1, 128)), np.zeros((1, 128))]
+    states = encoder.predict(input) #+ [np.zeros((1, 128)), np.zeros((1, 128))]
     # print(states[0].shape)
 
     token = to_categorical(np.array([11]), 13).reshape(1, 1, -1)
 
     while True:
-        out, h, c, h2, c2 = decoder.predict([token] + states)
+        out, h, c = decoder.predict([token] + states)
         i = np.argmax(out)
         print(i)
         if i == 12:
             break
         token = out
-        states = [h, c, h2, c2]
+        states = [h, c ]
 
 
 

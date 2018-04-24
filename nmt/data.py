@@ -7,12 +7,12 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
 
-SOS = "<s>"
+SOS = "s>"
 EOS = "</s>"
 # FastText 300D vectors
 EMBEDDING_DIM = 300
 
-MAX_NUM_WORDS = 20000
+MAX_NUM_WORDS = 30000
 
 
 def parse_corpora(path):
@@ -25,12 +25,16 @@ def parse_corpora(path):
         with open(fname, 'r') as f:
             for line in f:
                 line = line.strip()
-                line = line.replace(",", " ,")
-                line = line.replace(".", " .")
-                line = line.replace("!", " !")
-                line = line.replace("?", " ?")
-                line = line.replace(":", " :")
-                line = line.replace(";", " ;")
+                line = line.replace(",", " , ")
+                line = line.replace(".", " . ")
+                line = line.replace("!", " ! ")
+                line = line.replace("?", " ? ")
+                #line = line.replace(":", " : ")
+                #line = line.replace(";", " ; ")
+                line = line.replace('"', ' " ')
+                line = line.replace('(', ' ( ')
+                line = line.replace(')', ' ) ')
+                line = line.lower()
                 try:
                     en, tl = line.split('\t')
                 except ValueError:
@@ -39,13 +43,8 @@ def parse_corpora(path):
                 en = ' '.join([SOS] + en.split() + [EOS])
                 tl = ' '.join([SOS] + tl.split() + [EOS])
 
-                # en = SOS + ' ' + en + ' ' + EOS
-                # tl = SOS + ' ' + tl + ' ' + EOS
                 texts_en.append(en)
                 texts_tl.append(tl)
-                if len(tl) > 900:
-                    print(c)
-                    print(tl)
     return texts_tl, texts_en
 
 
