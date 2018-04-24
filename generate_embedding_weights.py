@@ -3,7 +3,8 @@
 import os.path
 
 import numpy as np
-from pyfasttext import FastText
+# from pyfasttext import FastText
+import fastText
 
 from nmt.data import parse_corpora, convert_to_sequence, MAX_NUM_WORDS, EMBEDDING_DIM
 
@@ -12,10 +13,10 @@ MODEL_TL_BIN = 'cc.tl.300.bin'
 
 
 def make_embedding_matrix(word_index, fname):
-    model = FastText(os.path.join('embeddings', fname))
+    model = fastText.load_model(os.path.join('nmt/embeddings', fname))
     embedding_matrix = np.zeros((len(word_index) + 1, EMBEDDING_DIM))
     for word, i in word_index.items():
-        embedding_matrix[i] = model.get_numpy_vector(word)
+        embedding_matrix[i] = fastText.get_word_vector(word)
     return embedding_matrix
 
 
