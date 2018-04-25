@@ -16,43 +16,43 @@ MAX_NUM_WORDS = 30000
 
 
 def parse_corpora(path):
+    max_len = 15
     texts_en = []
     texts_tl = []
+    symbols = '!"(),.?'
     for c in os.listdir(path):
         fname = os.path.join(path, c)
         if not os.path.isfile(fname):
             continue
         with open(fname, 'r') as f:
             for line in f:
-                line = line.strip()
-                line = line.replace(",", " , ")
-                line = line.replace(".", " . ")
-                line = line.replace("!", " ! ")
-                line = line.replace("?", " ? ")
-                #line = line.replace(":", " : ")
-                #line = line.replace(";", " ; ")
-                line = line.replace('"', ' " ')
-                line = line.replace('(', ' ( ')
-                line = line.replace(')', ' ) ')
-                line = line.lower()
+                line = line.strip().lower()
+                for c in symbols:
+                    line = line.replace(c, ' ' + c + ' ')
+                line = line.replace(' -', ' - ').replace('- ', ' - ')
                 try:
                     en, tl = line.split('\t')
                 except ValueError:
                     continue
-                # Add start and end of sequence markers
-                en = ' '.join([SOS] + en.split() + [EOS])
-                tl = ' '.join([SOS] + tl.split() + [EOS])
 
-                if len(en.split()) > 30 or len(tl.split()) > 30:
+                en = en.split()
+                tl = tl.split()
+
+                if len(en) > max_len or len(tl) > max_len:
                     continue
+
+                # Add start and end of sequence markers
+                en = ' '.join([SOS] + en + [EOS])
+                tl = ' '.join([SOS] + tl + [EOS])
 
                 texts_en.append(en)
                 texts_tl.append(tl)
+
     return texts_tl, texts_en
 
 
 def convert_to_sequence(texts, max_num_words):
-    tokenizer = Tokenizer(num_words=max_num_words, filters='')
+    tokenizer = Tokenizer(num_words=max_num_words, filters='#$%&*+/:;=@[\\]^_`{|}~\t\n')
     tokenizer.fit_on_texts(texts)
     # Convert from words to integers
     sequences = tokenizer.texts_to_sequences(texts)
