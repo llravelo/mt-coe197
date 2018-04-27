@@ -8,14 +8,14 @@ from pyfasttext import FastText
 from nmt.data import parse_corpora, convert_to_sequence, MAX_NUM_WORDS, EMBEDDING_DIM
 
 MODEL_EN_BIN = 'wiki.en.bin'
-MODEL_TL_BIN = 'cc.tl.300.bin'
+MODEL_TL_BIN = 'wiki.tl.bin'
 
 
 def make_embedding_matrix(word_index, fname):
     model = FastText(os.path.join('embeddings', fname))
-    embedding_matrix = np.zeros((len(word_index) + 1, EMBEDDING_DIM))
+    embedding_matrix = np.zeros((len(word_index) + 1, EMBEDDING_DIM), dtype='float32')
     for word, i in word_index.items():
-        embedding_matrix[i] = model.get_numpy_vector(word)
+        embedding_matrix[i] = model.get_numpy_vector(word, normalized=True)
     return embedding_matrix
 
 
