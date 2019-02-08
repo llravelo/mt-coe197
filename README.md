@@ -1,4 +1,6 @@
 # Machine Translation Using Sequence to Sequence Models
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fllravelo%2Fmt-coe197.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fllravelo%2Fmt-coe197?ref=badge_shield)
+
 Members:
 1. Leiko Ravelo
 2. Paolo Valdez
@@ -82,3 +84,7 @@ Possible hyperparameters include:
 6. Misc (Attention model, bidirectional lstm, deep lstm)
 
 >I'm not sure yet which ones of the above are important -Leiko
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fllravelo%2Fmt-coe197.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fllravelo%2Fmt-coe197?ref=badge_large)
